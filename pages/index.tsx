@@ -2,6 +2,8 @@ import { FormEvent, useState } from 'react'
 import type { NextPage } from 'next'
 import styles from '../styles/Home.module.css'
 import { useAuth } from '../context/AuthContext'
+import { parseCookies } from 'nookies'
+import { withSSRGuest } from '../utils/withSSRGuest'
 
 const Home: NextPage = () => {
   const { signIn } = useAuth()
@@ -30,3 +32,11 @@ const Home: NextPage = () => {
 }
 
 export default Home
+
+export const getServerSideProps = withSSRGuest( async (ctx) => {
+
+
+  return{
+    props: {}
+  }
+})
