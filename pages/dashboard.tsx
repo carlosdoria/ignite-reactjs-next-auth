@@ -1,17 +1,32 @@
 import { useEffect } from 'react'
-import { signOut, useAuth } from '../context/AuthContext'
-import { api } from '../services/apis'
+import { Can } from '../components/Can'
+import { useAuth } from '../context/AuthContext'
+import { setupAPIClient } from '../services/api'
+import { api } from '../services/apiClient'
+import { withSSRAuth } from '../utils/withSSRAuth'
 
 export default function Home () {
-  const { user } = useAuth()
-  
-  useEffect(() => {
-    api.get('/me')
-    .then( response => console.log(response))
-    .catch( error => signOut)
-  }, [])
+  const { user, signOut } = useAuth()
 
   return (
-    <h1>Dashboard: {user?.email}</h1>
+    <>
+      <h1>Dashboard: {user?.email}</h1>
+
+      <button onClick={() => signOut()}>Logout</button>
+
+      <Can permissions={['metrics.list']}>
+        <h2>Metrics</h2>
+      </Can>
+    </>
   )
 }
+
+
+export const getServerSideProps = withSSRAuth( async (ctx) => {
+  const apiClient = setupAPIClient(ctx)
+  const response = await apiClient.get('/me')
+
+  return {
+    props: {}
+  }
+})
